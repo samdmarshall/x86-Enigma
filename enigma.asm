@@ -110,71 +110,66 @@ s11 byte "FVPJIAOYEDRZXWGCTKUQSBNMHL"
 E byte "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 A_ byte 26 dup(" ")
-aterm byte 0
+   byte 0
 A_R byte 26 dup(" ")
-arterm byte 0
+	byte 0
+	
 astep byte 0
 ashift byte 1
 
 B_ byte 26 dup(" ")
-bterm byte 0
+   byte 0
 B_R byte 26 dup(" ")
-brterm byte 0
+	byte 0
+	
 bstep byte 0
 bshift byte 1
 
 C_ byte 26 dup(" ")
-cterm byte 0
+   byte 0
 C_R byte 26 dup(" ")
-crterm byte 0
+	byte 0
+	
 cstep byte 0
 cshift byte 1
 
 R byte 26 dup(" ")
-rterm byte 0
+  byte 0
 
 plug byte "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-terminator byte 0
+ 	 byte 0
 
 .code
 
 main proc
 	;setup rotors
-	call SetupRotors
 	call ClearRegisters
+	call SetupRotors
 	
 	;setup plugboard
-	call SetupPlugBoard
-	call ClearRegisters
+	call SetupPlugBoard	
 	
 	;get input string
 	call GetInputString
 	call ClearRegisters
-	mov ecx,0
 	mov cl, inputlen
 	mov esi, offset input
 	mov edi, offset output
 	Encrypt:
 	;check character
+	mov eax, 0
 	mov al, [esi]
 	cmp al, 65
-	jge cond1true
-	jmp isfalse
-	cond1true:
+	jl isfalse
 	cmp al, 90
-	jle istrue
-	jmp isfalse
-	istrue:
+	jg isfalse
 	;we are working with a letter
 
-	mov ebx, 0
 	mov bl, ashift
 	add astep, bl
 	cmp astep, 26
 	jge incb
-	jmp inca
-	inca:
-		jmp startencoding
+	jmp startencoding
 	incb:
 		sub astep, 26
 		mov ebx, 0
@@ -201,8 +196,7 @@ main proc
 	;send to plugboard
 	mov esi, offset plug
 	mov edx, 0
-	mov ecx, 0
-	mov cl, lengthof plug
+	mov ecx, lengthof plug
 	call PassThroughRotor
 	
 	;send to E
@@ -211,16 +205,14 @@ main proc
 	mov esi, offset A_
 	mov edx, 0
 	mov dl, astep
-	mov ecx, 0
-	mov cl, lengthof A_
+	mov ecx, lengthof A_
 	call PassThroughRotor
 	
 	;send to B
 	mov esi, offset B_
 	mov edx, 0
 	mov dl, bstep
-	mov ecx, 0
-	mov cl, lengthof B_
+	mov ecx, lengthof B_
 	call PassThroughRotor
 	
 	;send to C
@@ -233,32 +225,28 @@ main proc
 	;send to R
 	mov esi, offset R
 	mov edx, 0
-	mov ecx, 0
-	mov cl, lengthof R
+	mov ecx, lengthof R
 	call PassThroughRotor
 	
 	;send to CR
 	mov esi, offset C_R
 	mov edx, 0
 	mov dl, cstep
-	mov ecx, 0
-	mov cl, lengthof C_R
+	mov ecx, lengthof C_R
 	call PassThroughRotor
 	
 	;send to B_R
 	mov esi, offset B_R
 	mov edx, 0
 	mov dl, bstep
-	mov ecx, 0
-	mov cl, lengthof B_R
+	mov ecx, lengthof B_R
 	call PassThroughRotor
 	
 	;send to A_R
 	mov esi, offset A_R
 	mov edx, 0
 	mov dl, astep
-	mov ecx, 0
-	mov cl, lengthof A_R
+	mov ecx, lengthof A_R
 	call PassThroughRotor
 	
 	;send to E
@@ -266,8 +254,7 @@ main proc
 	;send to plugboard
 	mov esi, offset plug
 	mov edx, 0
-	mov ecx, 0
-	mov cl, lengthof plug
+	mov ecx, lengthof plug
 	call PassThroughRotor
 	
 	;add character to output
@@ -358,7 +345,7 @@ PassThroughRotor proc uses ebx ecx edx edi esi
 	ret
 PassThroughRotor endp
 
-SetupPlugBoard proc
+SetupPlugBoard proc uses edx eax esi edi
 	Setupkey:
 	call clrscr
 	mov edx, offset setup_plugboard_title
@@ -429,9 +416,7 @@ SetupPlugBoard proc
 		mov cl, [eax]
 		mov dl, [ebx]
 		cmp ecx, edx
-		je plug1ok
-		jmp usedplug
-		
+		jne usedplug		
 		plug1ok:
 			call ClearRegisters
 			mov eax, offset E
@@ -443,9 +428,7 @@ SetupPlugBoard proc
 			mov cl, [eax]
 			mov dl, [ebx]
 			cmp ecx, edx
-			je plug2ok
-			jmp usedplug
-			
+			jne usedplug
 			plug2ok:
 				call ClearRegisters
 				mov eax, offset plug
@@ -461,9 +444,7 @@ SetupPlugBoard proc
 				xchg ecx, edx
 				mov [eax], cl
 				mov [ebx], dl
-				jmp Setupkey
-		usedplug:
-		
+		usedplug:		
 		jmp Setupkey
 	two:
 		mov esi, offset E
@@ -471,13 +452,11 @@ SetupPlugBoard proc
 		mov ecx, lengthof E
 		resetPlug:
 			mov eax, 0
-			mov ebx, 0
 			mov al, [esi]
 			mov [edi], al
 			inc esi
 			inc edi
 		loop resetPlug
-		jmp Setupkey
 	invalid:
 	jmp Setupkey
 	
@@ -487,7 +466,7 @@ SetupPlugBoard proc
 	ret
 SetupPlugBoard endp
 
-SetupRotors proc
+SetupRotors proc uses eax edx ecx edx esi edi
 	Setuprtr:
 	call clrscr
 	mov edx, offset setup_rotor_title
