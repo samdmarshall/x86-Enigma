@@ -32,9 +32,9 @@ rtr_b byte "2. B: ",0
 rtr_c byte "3. C: ",0
 rtr_r byte "4. R: ",0
 
-rtr_menu_item1 byte "	1. Edit a Rotor",0
-rtr_menu_item2 byte "	2. Use these Rotors",0
-
+rtr_1_menu byte "	1. Edit a Rotor"
+		   byte 0dh,0ah,"	2. Use these Rotors",0
+		
 rtrprompt byte "Enter the Rotor you want to edit (1-4): ",0
 
 rtr_1_title byte "Rotor Properties:",0
@@ -50,18 +50,18 @@ rtr_1_menu_item4 byte "		4. Set step increment",0
 rtr_1_menu_item5 byte "		5. Back",0
 rtr_1_menu_item6 byte "		3. Back",0
 
-rtr_2_menu_title byte "Select a Rotor: ",0
-rtr_2_menu_item1 byte "		1. Service - I",0
-rtr_2_menu_item2 byte "		2. Service - II",0
-rtr_2_menu_item3 byte "		3. Service - III",0
-rtr_2_menu_item4 byte "		4. Service - IV",0
-rtr_2_menu_item5 byte "		5. Service - V",0
-rtr_2_menu_item6 byte "		6. Service - VI",0
-rtr_2_menu_item7 byte "		7. Service - VII",0
-rtr_2_menu_item8 byte "		8. Service - VIII",0
-rtr_2_menu_item9 byte "		9. Service - UKW A",0
-rtr_2_menu_item10 byte "	       10. Service - UKW B",0
-rtr_2_menu_item11 byte "	       11. Service - UKW C",0
+rtr_2_menu byte "Select a Rotor: "
+		   byte 0dh,0ah,"		1. Service - I"
+		   byte 0dh,0ah,"		2. Service - II"
+		   byte 0dh,0ah,"		3. Service - III"
+		   byte 0dh,0ah,"		4. Service - IV"
+		   byte 0dh,0ah,"		5. Service - V"
+		   byte 0dh,0ah,"		6. Service - VI"
+		   byte 0dh,0ah,"		7. Service - VII"
+		   byte 0dh,0ah,"		8. Service - VIII"
+		   byte 0dh,0ah,"		9. Service - UKW A"
+		   byte 0dh,0ah,"	       10. Service - UKW B"
+		   byte 0dh,0ah,"	       11. Service - UKW C",0
 
 rtr_input_prompt byte "Enter a rotor sequence: ",0
 
@@ -76,9 +76,9 @@ setup_plugboard_title byte "Setup Plugboard:",0
 
 pb_str1 byte "Current Plugboard: ",0
 
-pb_menu_item1 byte "	1. Add a connection",0
-pb_menu_item2 byte "	2. Reset Plugboard",0
-pb_menu_item3 byte "	3. Use this Plugboard",0
+pb_menu byte "	1. Add a connection"
+		byte 0dh,0ah,"	2. Reset Plugboard"
+		byte 0dh,0ah,"	3. Use this Plugboard",0
 
 pb_str2 byte "Enter Plugboard Key: ",0
 
@@ -172,7 +172,9 @@ main proc
 	add astep, bl
 	cmp astep, 26
 	jge incb
-	jmp startencoding
+	jmp inca
+	inca:
+		jmp startencoding
 	incb:
 		sub astep, 26
 		mov ebx, 0
@@ -371,11 +373,7 @@ SetupPlugBoard proc
 	
 	mov edx, offset menu_title
 	call writeline
-	mov edx, offset pb_menu_item1
-	call writeline
-	mov edx, offset pb_menu_item2
-	call writeline
-	mov edx, offset pb_menu_item3
+	mov edx, offset pb_menu
 	call writeline
 	call crlf
 	mov edx, offset menu_select
@@ -516,9 +514,7 @@ SetupRotors proc
 	
 	mov edx, offset menu_title
 	call writeline
-	mov edx, offset rtr_menu_item1
-	call writeline
-	mov edx, offset rtr_menu_item2
+	mov edx, offset rtr_1_menu
 	call writeline
 	mov edx, offset menu_select
 	call writestring
@@ -527,9 +523,6 @@ SetupRotors proc
 	
 	cmp eax, 1
 	je rtredit
-	jne valid
-	
-	valid:
 	cmp eax, 2
 	je rtruse
 	jne Setuprtr
@@ -768,29 +761,9 @@ GenerateReverse proc uses ebx ecx eax edx
 GenerateReverse endp
 
 ExistingRotorSelect proc
-	mov edx, offset rtr_2_menu_title
-	call writeline
-	mov edx, offset rtr_2_menu_item1
-	call writeline
-	mov edx, offset rtr_2_menu_item2
-	call writeline
-	mov edx, offset rtr_2_menu_item3
-	call writeline
-	mov edx, offset rtr_2_menu_item4
-	call writeline
-	mov edx, offset rtr_2_menu_item5
-	call writeline
-	mov edx, offset rtr_2_menu_item6
-	call writeline
-	mov edx, offset rtr_2_menu_item7
-	call writeline
-	mov edx, offset rtr_2_menu_item8
-	call writeline
-	mov edx, offset rtr_2_menu_item9
-	call writeline
-	mov edx, offset rtr_2_menu_item10
-	call writeline
-	mov edx, offset rtr_2_menu_item11
+	invalidrotor:
+	call clrscr
+	mov edx, offset rtr_2_menu
 	call writeline
 	call crlf
 	mov edx, offset menu_select
@@ -799,6 +772,10 @@ ExistingRotorSelect proc
 	call readint
 
 	mov ebx, 0
+	cmp eax, 0
+	jle invalidrotor
+	cmp eax, 12
+	jge invalidrotor
 	cmp eax, 1
 	mov ebx, offset s1
 	je fill_loop
