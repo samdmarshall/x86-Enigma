@@ -123,7 +123,7 @@ B_R byte 26 dup(" ")
 	byte 0
 	
 bstep byte 0
-bshift byte 1
+bshift byte 2
 
 C_ byte 26 dup(" ")
    byte 0
@@ -142,16 +142,14 @@ plug byte "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 .code
 
 main proc
-	;setup rotors
 	call ClearRegisters
+	
 	call SetupRotors
-	
-	;setup plugboard
-	call SetupPlugBoard	
-	
-	;get input string
+	call SetupPlugBoard
 	call GetInputString
+	
 	call ClearRegisters
+	
 	mov cl, inputlen
 	mov esi, offset input
 	mov edi, offset output
@@ -171,20 +169,16 @@ main proc
 	jmp startencoding
 	incb:
 		sub astep, 26
-		mov ebx, 0
-		mov bl, bshift
+		movzx ebx, bshift
 		add bstep, bl
 		cmp bstep, 26
-		jge incc
-		jmp startencoding
+		jl startencoding
 	incc:
 		sub bstep, 26
-		mov ebx, 0
-		mov bl, cshift
+		movzx ebx, cshift
 		add cstep, bl
 		cmp cstep, 26
-		jge resetc
-		jmp startencoding
+		jl startencoding
 	resetc:
 		sub cstep, 26
 	startencoding:
@@ -198,61 +192,47 @@ main proc
 	mov ecx, lengthof plug
 	call PassThroughRotor
 	
-	;send to E
-	
-	;send to A
 	mov esi, offset A_
-	mov edx, 0
-	mov dl, astep
+	movzx edx, astep
 	mov ecx, lengthof A_
 	call PassThroughRotor
 	
-	;send to B
 	mov esi, offset B_
 	movzx edx, bstep
 	mov ecx, lengthof B_
 	call PassThroughRotor
 	
-	;send to C
 	mov esi, offset C_
 	movzx edx, cstep
 	mov ecx, lengthof C_
 	call PassThroughRotor
 	
-	;send to R
 	mov esi, offset R
 	mov edx, 0
 	mov ecx, lengthof R
 	call PassThroughRotor
 	
-	;send to CR
 	mov esi, offset C_R
 	movzx edx, cstep
 	mov ecx, lengthof C_R
 	call PassThroughRotor
 	
-	;send to B_R
 	mov esi, offset B_R
 	movzx edx, bstep
 	mov ecx, lengthof B_R
 	call PassThroughRotor
 	
-	;send to A_R
 	mov esi, offset A_R
 	movzx edx, astep
 	mov ecx, lengthof A_R
 	call PassThroughRotor
 	
-	;send to E
-	
-	;send to plugboard
 	mov esi, offset plug
 	mov edx, 0
 	mov ecx, lengthof plug
 	call PassThroughRotor
 	
-	;add character to output
-	isfalse:
+	isfalse:	;add non-letter character to output
 	pop ecx
 	pop esi
 	mov [edi], al
@@ -513,8 +493,8 @@ SetupRotors proc uses eax edx ecx edx esi edi
 		
 		rtrone:
 		call ClearRegisters
-		mov bl, astep
-		mov cl, ashift
+		movzx ebx, astep
+		movzx ecx, ashift
 		mov esi, offset A_
 		mov edi, offset A_R
 		call SetRotorProp
@@ -524,8 +504,8 @@ SetupRotors proc uses eax edx ecx edx esi edi
 		
 		rtrtwo:
 		call ClearRegisters
-		mov bl, bstep
-		mov cl, bshift
+		movzx ebx, bstep
+		movzx ecx, bshift
 		mov esi, offset B_
 		mov edi, offset B_R
 		call SetRotorProp
@@ -535,8 +515,8 @@ SetupRotors proc uses eax edx ecx edx esi edi
 		
 		rtrthree:
 		call ClearRegisters
-		mov bl, cstep
-		mov cl, cshift
+		movzx ebx, cstep
+		movzx ecx, cshift
 		mov esi, offset C_
 		mov edi, offset C_R
 		call SetRotorProp
@@ -733,7 +713,6 @@ ExistingRotorSelect proc
 	mov eax, 0
 	call readint
 
-	mov ebx, 0
 	cmp eax, 0
 	jle invalidrotor
 	cmp eax, 12
