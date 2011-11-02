@@ -157,8 +157,7 @@ main proc
 	mov edi, offset output
 	Encrypt:
 	;check character
-	mov eax, 0
-	mov al, [esi]
+	mov eax, [esi]
 	cmp al, 65
 	jl isfalse
 	cmp al, 90
@@ -210,15 +209,13 @@ main proc
 	
 	;send to B
 	mov esi, offset B_
-	mov edx, 0
-	mov dl, bstep
+	movzx edx, bstep
 	mov ecx, lengthof B_
 	call PassThroughRotor
 	
 	;send to C
 	mov esi, offset C_
-	mov edx, 0
-	mov dl, cstep
+	movzx edx, cstep
 	mov ecx, lengthof C_
 	call PassThroughRotor
 	
@@ -230,22 +227,19 @@ main proc
 	
 	;send to CR
 	mov esi, offset C_R
-	mov edx, 0
-	mov dl, cstep
+	movzx edx, cstep
 	mov ecx, lengthof C_R
 	call PassThroughRotor
 	
 	;send to B_R
 	mov esi, offset B_R
-	mov edx, 0
-	mov dl, bstep
+	movzx edx, bstep
 	mov ecx, lengthof B_R
 	call PassThroughRotor
 	
 	;send to A_R
 	mov esi, offset A_R
-	mov edx, 0
-	mov dl, astep
+	movzx edx, astep
 	mov ecx, lengthof A_R
 	call PassThroughRotor
 	
@@ -300,8 +294,7 @@ GetInputString proc
 GetInputString endp
 
 GetIndexInEntry proc uses ebx ecx esi
-	mov ecx, 0
-	mov cl, lengthof E
+	mov ecx, lengthof E
 	mov esi, offset E
 	ScanEntry:
 	cmp al, [esi]
@@ -310,11 +303,9 @@ GetIndexInEntry proc uses ebx ecx esi
 	loop ScanEntry
 	jmp gotoEnd
 	FoundIndex:
-	mov ebx, 0
 	mov ebx, lengthof E
 	sub ebx, ecx
 	mov eax, ebx
-	mov ebx, 0
 	gotoEnd:
 	ret
 GetIndexInEntry endp
@@ -339,9 +330,9 @@ PassThroughRotor proc uses ebx ecx edx edi esi
 	sub edi, ebx
 	;ecx = distance from (offset + steps) to position 26
 	sub ecx, edi
-	add esi, ecx 
-	mov eax, 0
-	mov al, [esi]
+	add esi, ecx
+	mov ecx, [esi]
+	mov eax, ecx
 	ret
 PassThroughRotor endp
 
@@ -411,10 +402,8 @@ SetupPlugBoard proc uses edx eax esi edi
 		mov ebx, offset plug
 		add al, p1index
 		add bl, p1index
-		mov ecx, 0
-		mov edx, 0
-		mov cl, [eax]
-		mov dl, [ebx]
+		mov ecx, [eax]
+		mov edx, [ebx]
 		cmp ecx, edx
 		jne usedplug		
 		plug1ok:
@@ -423,10 +412,8 @@ SetupPlugBoard proc uses edx eax esi edi
 			mov ebx, offset plug
 			add al, p2index
 			add bl, p2index
-			mov ecx, 0
-			mov edx, 0
-			mov cl, [eax]
-			mov dl, [ebx]
+			mov ecx, [eax]
+			mov edx, [ebx]
 			cmp ecx, edx
 			jne usedplug
 			plug2ok:
@@ -451,8 +438,7 @@ SetupPlugBoard proc uses edx eax esi edi
 		mov edi, offset plug
 		mov ecx, lengthof E
 		resetPlug:
-			mov eax, 0
-			mov al, [esi]
+			mov eax, [esi]
 			mov [edi], al
 			inc esi
 			inc edi
@@ -652,8 +638,7 @@ SetRotorProp proc uses edx eax
 	
 	mov ecx, 26
 	FillRotor:
-	mov edx, 0
-	mov dl, [ebx]
+	mov edx, [ebx]
 	mov [edi], dl
 	inc ebx
 	inc edi
@@ -721,11 +706,9 @@ GenerateReverse proc uses ebx ecx eax edx
 	mov ebx, offset E
 	mov ecx, 26
 	FillReverse:
-	mov eax, 0
-	mov al, [esi]
+	mov eax, [esi]
 	call GetIndexInEntry
-	mov edx, 0
-	mov dl, [ebx]
+	mov edx, [ebx]
 	push esi
 	mov esi, edi
 	add edi, eax
@@ -837,8 +820,7 @@ SetReflectorProp proc uses edx eax ebx edx ecx edi
 	mov edi, esi
 	mov ecx, 26
 	FillReflector:
-	mov edx, 0
-	mov dl, [ebx]
+	mov edx, [ebx]
 	mov [edi], dl
 	inc ebx
 	inc edi
@@ -889,8 +871,7 @@ VerifyRotor proc uses ecx edx
 	mov ecx, 26
 	mov esi, edi
 	CheckLetters:
-		mov eax, 0
-		mov al, [esi]
+		mov eax, [esi]
 		cmp eax, edx
 		je Nextletter
 		inc esi
