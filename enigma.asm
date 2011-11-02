@@ -14,7 +14,8 @@ include Irvine32.inc
 ; This product includes software developed by the Sam Marshall.
 ;4. Neither the name of the Sam Marshall nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 ;
-;THIS SOFTWARE IS PROVIDED BY Sam Marshall ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL Sam Marshall BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+;THIS SOFTWARE IS PROVIDED BY Sam Marshall ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+; IN NO EVENT SHALL Sam Marshall BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 .data
@@ -171,9 +172,7 @@ main proc
 	add astep, bl
 	cmp astep, 26
 	jge incb
-	jmp inca
-	inca:
-		jmp startencoding
+	jmp startencoding
 	incb:
 		sub astep, 26
 		mov ebx, 0
@@ -801,62 +800,37 @@ ExistingRotorSelect proc
 
 	mov ebx, 0
 	cmp eax, 1
-	je s_1
-	cmp eax, 2
-	je s_2
-	cmp eax, 3
-	je s_3
-	cmp eax, 4
-	je s_4
-	cmp eax, 5
-	je s_5
-	cmp eax, 6
-	je s_6
-	cmp eax, 7
-	je s_7
-	cmp eax, 8
-	je s_8
-	cmp eax, 9
-	je s_9
-	cmp eax, 10
-	je s_10
-	cmp eax, 11
-	je s_11
-	jne fill_loop
-	
-	s_1:
 	mov ebx, offset s1
-	jmp fill_loop
-	s_2:
+	je fill_loop
+	cmp eax, 2
 	mov ebx, offset s2
-	jmp fill_loop
-	s_3:
+	je fill_loop
+	cmp eax, 3
 	mov ebx, offset s3
-	jmp fill_loop
-	s_4:
+	je fill_loop
+	cmp eax, 4
 	mov ebx, offset s4
-	jmp fill_loop
-	s_5:
+	je fill_loop
+	cmp eax, 5
 	mov ebx, offset s5
-	jmp fill_loop
-	s_6:
+	je fill_loop
+	cmp eax, 6
 	mov ebx, offset s6
-	jmp fill_loop
-	s_7:
+	je fill_loop
+	cmp eax, 7
 	mov ebx, offset s7
-	jmp fill_loop
-	s_8:
+	je fill_loop
+	cmp eax, 8
 	mov ebx, offset s8
-	jmp fill_loop
-	s_9:
+	je fill_loop
+	cmp eax, 9
 	mov ebx, offset s9
-	jmp fill_loop
-	s_10:
+	je fill_loop
+	cmp eax, 10
 	mov ebx, offset s10
-	jmp fill_loop
-	s_11:
+	je fill_loop
+	cmp eax, 11
 	mov ebx, offset s11
- 	
 	fill_loop:
 	ret
 ExistingRotorSelect endp
