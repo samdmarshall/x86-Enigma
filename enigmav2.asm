@@ -27,12 +27,21 @@ output_prompt byte "Encrypted message: ",0
 stringlen byte 0
 
 arotor byte "EKMFLGDQVZNTOWYHXUSPAIBRCJ",0
-arevrs byte 26 dup(" "),0
+arevrs byte "UWYGADFPVZBECKMTHXSLRINQOJ",0
 brotor byte "AJDKSIRUXBLHWTMCQGZNPYFVOE",0
-brevrs byte 26 dup(" "),0
+brevrs byte "AJPCZWRLFBDKOTYUQGENHXMIVS",0
 crotor byte "BDFHJLCPRTXVZNYEIWGAKMUSQO",0
-crevrs byte 26 dup(" "),0
+crevrs byte "TAGBPCSDQEUFVNZHYIXJWLRKOM",0
 reflct byte "YRUHQSLDPXNGOKMIEBFZCWVJAT",0
+
+astep byte 0
+ashft byte 1
+
+bstep byte 0
+bshft byte 2
+
+cstep byte 0
+cshft byte 1
 
 E byte "ABCDEFGHIJKLMNOPQRSTUVWXYZ",0
 
@@ -86,18 +95,60 @@ Verify proc
 	ret
 Verify endp
 
-Cypher proc uses eax ecx edx edi esi
+Cypher proc uses esi edx ecx
 	
+	mov esi, offset plug
+	push esi
+	mov edx, 0
+	push edx
+	mov esi, offset arevrs
+	push esi
+	movzx edx, astep
+	push edx
+	mov esi, offset brevrs
+	push esi
+	movzx edx, bstep
+	push edx
+	mov esi, offset crevrs
+	push esi
+	movzx edx, cstep
+	push edx
+	mov esi, offset reflct
+	push esi
+	mov edx, 0
+	push edx
+	mov esi, offset crotor
+	push esi
+	movzx edx, cstep
+	push edx
+	mov esi, offset brotor
+	push esi
+	movzx edx, bstep
+	push edx
 	mov esi, offset arotor
+	push esi
+	movzx edx, astep
+	push edx
+	mov esi, offset plug
+	push esi
+	mov edx, 0
+	push edx
+	
+	mov ecx, 9
+	RunRotors:
+	pop edx
+	pop esi
 	invoke str_length, esi
-	;mov edx, astep
 	call PassThroughRotor
+	loop RunRotors
 	
 	ret
 Cypher endp
 
 
-PassThroughRotor proc  
+PassThroughRotor proc 
+	; ebx is the letter
+	
 	
 	ret
 PassThroughRotor endp
