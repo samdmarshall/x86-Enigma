@@ -19,24 +19,24 @@ Include Irvine32.inc
 
 
 .data
-input byte 255 dup(?)
+input byte 255 dup(?),0
 input_prompt byte "Enter a message: ",0
-output byte 255 dup(?)
+output byte 255 dup(?),0
 output_prompt byte "Encrypted message: ",0
 
 stringlen byte 0
 
-rotor1_ byte "EKMFLGDQVZNTOWYHXUSPAIBRCJ"
-rotor1R byte 26 dup(" ")
-rotor2_ byte "AJDKSIRUXBLHWTMCQGZNPYFVOE"
-rotor2R byte 26 dup(" ")
-rotor3_ byte "BDFHJLCPRTXVZNYEIWGAKMUSQO"
-rotor3R byte 26 dup(" ")
-reflect byte "YRUHQSLDPXNGOKMIEBFZCWVJAT"
+arotor byte "EKMFLGDQVZNTOWYHXUSPAIBRCJ",0
+arevrs byte 26 dup(" "),0
+brotor byte "AJDKSIRUXBLHWTMCQGZNPYFVOE",0
+brevrs byte 26 dup(" "),0
+crotor byte "BDFHJLCPRTXVZNYEIWGAKMUSQO",0
+crevrs byte 26 dup(" "),0
+reflct byte "YRUHQSLDPXNGOKMIEBFZCWVJAT",0
 
-E byte "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+E byte "ABCDEFGHIJKLMNOPQRSTUVWXYZ",0
 
-plug byte "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+plug byte "ABCDEFGHIJKLMNOPQRSTUVWXYZ",0
 
 .code
 
@@ -46,18 +46,19 @@ main proc
 	mov edi, offset output
 	movzx ecx, stringlen
 	Encrypt:
-	mov eax, [esi]
+	mov ebx, [esi]
 	call Verify
-	cmp ebx, 0
-	jne NextCharacter
+	cmp ecx, 0
+	je NextCharacter
 	call Cypher
-	mov [edi], al
-	NextCharacter: 
+	NextCharacter:
+	mov [edi], bl
 	inc esi
 	inc edi
 	loop Encrypt
 	mov edx, offset output
 	call writestring
+	call crlf
 	exit
 main endp
 
@@ -73,22 +74,32 @@ GetInputString proc uses eax ecx edx
 GetInputString endp
 
 Verify proc
-	cmp eax, 65
+	cmp ebx, 65
 	jl invalid
-	cmp eax, 90
+	cmp ebx, 90
 	jg invalid
-	mov ebx, 0
+	mov ecx, 0
 	jmp GotoEnd
 	invalid:
-		mov ebx, 1
+		mov ecx, 1
 	GotoEnd:
 	ret
 Verify endp
 
-Cypher proc uses ebx ecx edx edi esi
+Cypher proc uses eax ecx edx edi esi
 	
+	mov esi, offset arotor
+	invoke str_length, esi
+	;mov edx, astep
+	call PassThroughRotor
 	
 	ret
 Cypher endp
+
+
+PassThroughRotor proc  
+	
+	ret
+PassThroughRotor endp
 
 end main
