@@ -26,28 +26,44 @@ output_prompt byte "Encrypted message: ",0
 
 stringlen byte 0
 
-arotor byte "EKMFLGDQVZNTOWYHXUSPAIBRCJ",0
-arevrs byte "UWYGADFPVZBECKMTHXSLRINQOJ",0
-brotor byte "AJDKSIRUXBLHWTMCQGZNPYFVOE",0
-brevrs byte "AJPCZWRLFBDKOTYUQGENHXMIVS",0
-crotor byte "BDFHJLCPRTXVZNYEIWGAKMUSQO",0
-crevrs byte "TAGBPCSDQEUFVNZHYIXJWLRKOM",0
-reflct byte "YRUHQSLDPXNGOKMIEBFZCWVJAT",0
+arotor byte "EKMFLGDQVZNTOWYHXUSPAIBRCJ"
+arevrs byte "UWYGADFPVZBECKMTHXSLRINQOJ"
+
+brotor byte "AJDKSIRUXBLHWTMCQGZNPYFVOE"
+brevrs byte "AJPCZWRLFBDKOTYUQGENHXMIVS"
+
+crotor byte "BDFHJLCPRTXVZNYEIWGAKMUSQO"
+crevrs byte "TAGBPCSDQEUFVNZHYIXJWLRKOM"
+
+reflct byte "YRUHQSLDPXNGOKMIEBFZCWVJAT"
 
 astep byte 0
 ashft byte 1
 
 bstep byte 0
-bshft byte 2
+bshft byte 1
 
 cstep byte 0
 cshft byte 1
 
-E byte "ABCDEFGHIJKLMNOPQRSTUVWXYZ",0
+E byte "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-plug byte "ABCDEFGHIJKLMNOPQRSTUVWXYZ",0
+plug byte "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 .code
+
+PassThroughRotor proc uses esi edi ecx,
+	r_offset:PTR BYTE,
+	step_count:BYTE
+	
+	mov esi, r_offset
+	movzx edx, step_count
+	sub ebx, 65
+	add esi, ebx
+	mov bl, [esi]
+	
+	ret
+PassThroughRotor endp
 
 main proc
 	call GetInputString
@@ -55,23 +71,40 @@ main proc
 	mov edi, offset output
 	movzx ecx, stringlen
 	Encrypt:
-	mov ebx, [esi]
-	call Verify
 	cmp ecx, 0
-	je NextCharacter
-	call Cypher
+	je PrintOutput
+	mov ebx, 0
+	mov bl, [esi]
+	call Verify
+	cmp eax, 0
+	jne NextCharacter
+	
+	invoke PassThroughRotor, offset plug, 0
+	invoke PassThroughRotor, offset crotor, cstep
+	invoke PassThroughRotor, offset brotor, bstep
+	invoke PassThroughRotor, offset arotor, astep
+	invoke PassThroughRotor, offset reflct, 0
+	invoke PassThroughRotor, offset arevrs, astep
+	invoke PassThroughRotor, offset brevrs, bstep
+	invoke PassThroughRotor, offset crevrs, cstep
+	invoke PassThroughRotor, offset plug, 0
+	
 	NextCharacter:
 	mov [edi], bl
 	inc esi
 	inc edi
-	loop Encrypt
+	dec ecx
+	jmp Encrypt
+	PrintOutput:
+	call crlf
+	call crlf
 	mov edx, offset output
 	call writestring
 	call crlf
 	exit
 main endp
 
-GetInputString proc uses eax ecx edx
+GetInputString proc
 	mov edx, offset input_prompt
 	call writestring
 	mov edx, offset input
@@ -83,77 +116,15 @@ GetInputString proc uses eax ecx edx
 GetInputString endp
 
 Verify proc
+	mov eax, 0
 	cmp ebx, 65
 	jl invalid
 	cmp ebx, 90
-	jg invalid
-	mov ecx, 0
-	jmp GotoEnd
+	jle GotoEnd
 	invalid:
-		mov ecx, 1
+	mov eax, 1
 	GotoEnd:
 	ret
 Verify endp
-
-Cypher proc uses esi edx ecx
-	
-	mov esi, offset plug
-	push esi
-	mov edx, 0
-	push edx
-	mov esi, offset arevrs
-	push esi
-	movzx edx, astep
-	push edx
-	mov esi, offset brevrs
-	push esi
-	movzx edx, bstep
-	push edx
-	mov esi, offset crevrs
-	push esi
-	movzx edx, cstep
-	push edx
-	mov esi, offset reflct
-	push esi
-	mov edx, 0
-	push edx
-	mov esi, offset crotor
-	push esi
-	movzx edx, cstep
-	push edx
-	mov esi, offset brotor
-	push esi
-	movzx edx, bstep
-	push edx
-	mov esi, offset arotor
-	push esi
-	movzx edx, astep
-	push edx
-	mov esi, offset plug
-	push esi
-	mov edx, 0
-	push edx
-	
-	mov ecx, 9
-	RunRotors:
-	pop edx
-	pop esi
-	invoke str_length, esi
-	call PassThroughRotor
-	loop RunRotors
-	
-	ret
-Cypher endp
-
-
-PassThroughRotor proc uses ecx edi
-	; esi is the offset to the rotor
-	; edx is the step
-	; eax is the length
-	; ebx is the letter
-	
-	
-	ret
-PassThroughRotor endp
 
 end main
