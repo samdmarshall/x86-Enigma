@@ -146,7 +146,10 @@ Cypher proc uses esi edx ecx
 Cypher endp
 
 
-PassThroughRotor proc 
+PassThroughRotor proc uses ecx edi
+	; esi is the offset to the rotor
+	; edx is the step
+	; eax is the length
 	; ebx is the letter
 	
 	
