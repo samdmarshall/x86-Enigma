@@ -41,7 +41,7 @@ astep byte 0
 ashft byte 1
 
 bstep byte 0
-bshft byte 1
+bshft byte 2
 
 cstep byte 0
 cshft byte 1
@@ -56,12 +56,17 @@ PassThroughRotor proc uses esi edi ecx,
 	r_offset:PTR BYTE,
 	step_count:BYTE
 	
+	mov ecx, 26
+	mov edi, ecx
 	mov esi, r_offset
 	movzx edx, step_count
 	sub ebx, 65
-	add esi, ebx
+	add esi, edx
+	add edx, ebx
+	sub ecx, edx
+	sub edi, ecx
+	add esi, edi
 	mov bl, [esi]
-	
 	ret
 PassThroughRotor endp
 
@@ -79,6 +84,23 @@ main proc
 	cmp eax, 0
 	jne NextCharacter
 	
+	movzx eax, cshft
+	add cstep, al
+	cmp cstep, 26
+	jl encode
+	sub cstep, 26
+	movzx eax, bshft
+	add bstep, al
+	cmp bstep, 26
+	jl encode
+	sub bstep, 26
+	movzx eax, ashft
+	add astep, al
+	cmp astep, 26
+	jl encode
+	sub astep, 26
+	
+	encode:
 	invoke PassThroughRotor, offset plug, 0
 	invoke PassThroughRotor, offset crotor, cstep
 	invoke PassThroughRotor, offset brotor, bstep
@@ -96,8 +118,6 @@ main proc
 	dec ecx
 	jmp Encrypt
 	PrintOutput:
-	call crlf
-	call crlf
 	mov edx, offset output
 	call writestring
 	call crlf
