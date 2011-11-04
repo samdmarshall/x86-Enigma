@@ -50,18 +50,7 @@ rtr_1_menu_item4 byte "		4. Set step increment",0
 rtr_1_menu_item5 byte "		5. Back",0
 rtr_1_menu_item6 byte "		3. Back",0
 
-rtr_2_menu byte "Select a Rotor: "
-		   byte 0dh,0ah,"		1. Service - I"
-		   byte 0dh,0ah,"		2. Service - II"
-		   byte 0dh,0ah,"		3. Service - III"
-		   byte 0dh,0ah,"		4. Service - IV"
-		   byte 0dh,0ah,"		5. Service - V"
-		   byte 0dh,0ah,"		6. Service - VI"
-		   byte 0dh,0ah,"		7. Service - VII"
-		   byte 0dh,0ah,"		8. Service - VIII"
-		   byte 0dh,0ah,"		9. Service - UKW A"
-		   byte 0dh,0ah,"	       10. Service - UKW B"
-		   byte 0dh,0ah,"	       11. Service - UKW C",0
+rtr_2_menu byte "Select a Rotor: ",0dh,0ah,"		1. Service - I",0dh,0ah,"		2. Service - II",0dh,0ah,"		3. Service - III",0dh,0ah,"		4. Service - IV",0dh,0ah,"		5. Service - V",0dh,0ah,"		6. Service - VI",0dh,0ah,"		7. Service - VII",0dh,0ah,"		8. Service - VIII",0dh,0ah,"		9. Service - UKW A",0dh,0ah,"	       10. Service - UKW B",0dh,0ah,"	       11. Service - UKW C",0
 
 rtr_input_prompt byte "Enter a rotor sequence: ",0
 
@@ -76,9 +65,7 @@ setup_plugboard_title byte "Setup Plugboard:",0
 
 pb_str1 byte "Current Plugboard: ",0
 
-pb_menu byte "	1. Add a connection"
-		byte 0dh,0ah,"	2. Reset Plugboard"
-		byte 0dh,0ah,"	3. Use this Plugboard",0
+pb_menu byte "	1. Add a connection",0dh,0ah,"	2. Reset Plugboard",0dh,0ah,"	3. Use this Plugboard",0
 
 pb_str2 byte "Enter Plugboard Key: ",0
 
@@ -303,9 +290,8 @@ PassThroughRotor proc uses ebx ecx edx edi esi
 	; ecx lengthof rotor array
 	mov edi, ecx
 	add esi, edx
-	mov ebx, 0
-	mov bl, dl
-	add bl, al
+	movzx ebx, dl
+	add ebx, al
 	;bl = distance from (offset + steps) (0 - 25)
 	sub edi, ebx
 	;ecx = distance from (offset + steps) to position 26
