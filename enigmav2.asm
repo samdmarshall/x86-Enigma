@@ -41,7 +41,7 @@ astep byte 0
 ashft byte 1
 
 bstep byte 0
-bshft byte 2
+bshft byte 1
 
 cstep byte 0
 cshft byte 1
@@ -55,7 +55,6 @@ plug byte "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 PassThroughRotor proc uses esi edi ecx,
 	r_offset:PTR BYTE,
 	step_count:BYTE
-	
 	mov ecx, 26
 	mov edi, ecx
 	mov esi, r_offset
@@ -92,7 +91,6 @@ main proc
 	invoke GenerateReverse, addr crevrs, addr crotor
 	invoke GenerateReverse, addr brevrs, addr brotor
 	invoke GenerateReverse, addr arevrs, addr arotor
-	
 	call GetInputString
 	mov esi, offset input
 	mov edi, offset output
