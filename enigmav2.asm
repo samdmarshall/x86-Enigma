@@ -97,10 +97,9 @@ SetXY proc,
 	ret
 SetXY endp
 
-UpdateRotorPositions proc uses eax ecx edx edi,
-	rotors:PTR BYTE
+UpdateRotorPositions proc uses eax ecx edx edi
 	invoke SetXY, 34, 5
-	mov edi, rotors
+	mov edi, offset astep
 	mov cl, 3
 	updatepositions:
 	mov al, [edi]
@@ -110,7 +109,7 @@ UpdateRotorPositions proc uses eax ecx edx edi,
 	invoke SetXY, dl, dh
 	inc edi
 	loop updatepositions
-	invoke SetXY, 0, 8
+	invoke SetXY, 0, 11
 	ret
 UpdateRotorPositions endp
 
@@ -149,7 +148,7 @@ main proc
 	sub astep, 26
 
 	encode:
-	invoke UpdateRotorPositions, offset astep
+	invoke UpdateRotorPositions
 	
 	invoke PassThroughRotor, offset plug, 0
 	invoke PassThroughRotor, offset crotor, cstep
