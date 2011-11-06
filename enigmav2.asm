@@ -88,6 +88,32 @@ GenerateReverse proc uses edi esi ecx eax ebx,
 	ret
 GenerateReverse endp
 
+SetXY proc,
+	X:BYTE,
+	Y:BYTE
+	mov dl, X
+	mov dh, Y
+	call gotoxy
+	ret
+SetXY endp
+
+UpdateRotorPositions proc uses eax ecx edx edi,
+	rotors:PTR BYTE
+	invoke SetXY, 34, 5
+	mov edi, rotors
+	mov cl, 3
+	updatepositions:
+	mov al, [edi]
+	add al, 65
+	call writechar
+	add dl, 4
+	invoke SetXY, dl, dh
+	inc edi
+	loop updatepositions
+	invoke SetXY, 0, 8
+	ret
+UpdateRotorPositions endp
+
 main proc
 	call Setup
 	invoke GenerateReverse, addr crevrs, addr crotor
@@ -121,8 +147,10 @@ main proc
 	cmp astep, 26
 	jl encode
 	sub astep, 26
-	
+
 	encode:
+	invoke UpdateRotorPositions, offset astep
+	
 	invoke PassThroughRotor, offset plug, 0
 	invoke PassThroughRotor, offset crotor, cstep
 	invoke PassThroughRotor, offset brotor, bstep
@@ -149,12 +177,12 @@ main endp
 GetInputForRotor proc uses eax ebx ecx edx edi
 	mov ebx, 0
 	mov edi, offset astep
-	mov dl, 35
+	mov dl, 34
 	mov dh, 5
 	NextInput:
 	mov cl, [edi]
 	inputkey:
-		call gotoxy
+		invoke SetXY, dl, dh
 		call readchar
 		cmp eax, 7181
 		je finishrotors
@@ -205,9 +233,7 @@ GetInputForRotor endp
 
 Setup proc
 	call clrscr
-	mov dl, 34
-	mov dh, 5
-	call gotoxy
+	invoke SetXY, 33, 5
 	mov edx, offset rotor_positions
 	call writestring
 	invoke GetInputForRotor
