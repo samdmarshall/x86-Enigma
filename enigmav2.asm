@@ -151,7 +151,8 @@ GetInputForRotor proc uses eax ebx ecx edx edi esi
 	mov edi, offset astep
 	mov ecx, 0
 	mov edx, 0
-	mov dl, 1
+	mov dl, 35
+	mov dh, 5
 	NextInput:
 	mov esi, edi
 	mov eax, 0
@@ -207,6 +208,10 @@ GetInputForRotor endp
 
 Setup proc
 	call clrscr
+	mov edx, 0
+	mov dl, 34
+	mov dh, 5
+	call gotoxy
 	mov edx, offset rotor_positions
 	call writestring
 	invoke GetInputForRotor
