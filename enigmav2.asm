@@ -146,18 +146,13 @@ main proc
 	exit
 main endp
 
-GetInputForRotor proc uses eax ebx ecx edx edi esi
+GetInputForRotor proc uses eax ebx ecx edx edi
 	mov ebx, 0
 	mov edi, offset astep
-	mov ecx, 0
-	mov edx, 0
 	mov dl, 35
 	mov dh, 5
 	NextInput:
-	mov esi, edi
-	mov eax, 0
-	add esi, ebx
-	mov cl, [esi]
+	mov cl, [edi]
 	inputkey:
 		call gotoxy
 		call readchar
@@ -185,7 +180,7 @@ GetInputForRotor proc uses eax ebx ecx edx edi esi
 		backposition:
 		dec cl
 	WriteNewPosition:
-		mov [esi], cl
+		mov [edi], cl
 		add cl, 65
 		movzx eax, cl
 		call writechar
@@ -194,12 +189,14 @@ GetInputForRotor proc uses eax ebx ecx edx edi esi
 		cmp ebx, 0
 		je NextInput
 		sub dl, 4
+		dec edi
 		dec ebx
 		jmp NextInput
 	rightrotor:
 		cmp ebx, 2
 		je NextInput
 		add dl, 4
+		inc edi
 		inc ebx
 		jmp NextInput
 	finishrotors:
@@ -208,7 +205,6 @@ GetInputForRotor endp
 
 Setup proc
 	call clrscr
-	mov edx, 0
 	mov dl, 34
 	mov dh, 5
 	call gotoxy
