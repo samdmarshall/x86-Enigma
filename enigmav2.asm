@@ -38,17 +38,18 @@ crevrs byte 26 dup(" ")
 reflct byte "YRUHQSLDPXNGOKMIEBFZCWVJAT"
 
 astep byte 0
-ashft byte 1
-
 bstep byte 0
-bshft byte 1
-
 cstep byte 0
+
+ashft byte 1
+bshft byte 1
 cshft byte 1
 
 E byte "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 plug byte "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+rotor_positions byte "<A> <A> <A>",0
 
 .code
 
@@ -88,6 +89,7 @@ GenerateReverse proc uses edi esi ecx eax ebx,
 GenerateReverse endp
 
 main proc
+	call Setup
 	invoke GenerateReverse, addr crevrs, addr crotor
 	invoke GenerateReverse, addr brevrs, addr brotor
 	invoke GenerateReverse, addr arevrs, addr arotor
@@ -143,6 +145,74 @@ main proc
 	call crlf
 	exit
 main endp
+
+GetInputForRotor proc uses eax ebx ecx edx edi esi
+	mov ebx, 0
+	mov edi, offset astep
+	mov ecx, 0
+	mov edx, 0
+	mov dl, 1
+	NextInput:
+	mov esi, edi
+	mov eax, 0
+	add esi, ebx
+	mov cl, [esi]
+	inputkey:
+		call gotoxy
+		call readchar
+		cmp eax, 7181
+		je finishrotors
+		cmp eax, 18432
+		je increasestep
+		cmp eax, 20480
+		je decreasestep
+		cmp eax, 19200
+		je leftrotor
+		cmp eax, 19712
+		je rightrotor
+		jne inputkey
+	increasestep:
+		inc cl
+		cmp cl, 25
+		jle WriteNewPosition
+		mov cl, 0
+		jmp WriteNewPosition
+	decreasestep:
+		cmp cl, 0
+		jne backposition
+		mov cl, 26
+		backposition:
+		dec cl
+	WriteNewPosition:
+		mov [esi], cl
+		add cl, 65
+		movzx eax, cl
+		call writechar
+		jmp NextInput
+	leftrotor:
+		cmp ebx, 0
+		je NextInput
+		sub dl, 4
+		dec ebx
+		jmp NextInput
+	rightrotor:
+		cmp ebx, 2
+		je NextInput
+		add dl, 4
+		inc ebx
+		jmp NextInput
+	finishrotors:
+	ret
+GetInputForRotor endp
+
+Setup proc
+	call clrscr
+	mov edx, offset rotor_positions
+	call writestring
+	invoke GetInputForRotor
+	call crlf
+	ret
+Setup endp
 
 GetInputString proc
 	mov edx, offset input_prompt
