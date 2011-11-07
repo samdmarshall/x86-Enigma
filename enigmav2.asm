@@ -42,7 +42,7 @@ bstep byte 0
 cstep byte 0
 
 ashft byte 1
-bshft byte 1
+bshft byte 2
 cshft byte 1
 
 E byte "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
