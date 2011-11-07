@@ -51,8 +51,6 @@ plug byte "ABCDEFGHIJKLMNOPQRSTUVWXYZ",0
 plugpretty byte "||||||||||||||||||||||||||"
 plugdone byte "[Done]",0
 
-swap0 byte 0
-
 rotor_positions byte "<A> <A> <A>",0
 
 .code
@@ -116,6 +114,20 @@ UpdateRotorPositions proc uses eax ecx edx edi
 	invoke SetXY, 0, 11
 	ret
 UpdateRotorPositions endp
+
+DisplayPlugboard proc uses eax esi ecx,
+	str_offset:PTR BYTE
+	mov esi, str_offset
+	mov ecx, 26
+	printplug:
+		mov al, [esi]
+		call writechar
+		mov al, 32
+		call writechar
+		inc esi
+	loop printplug
+	ret
+DisplayPlugboard endp
 
 main proc
 	call Setup
@@ -239,118 +251,77 @@ GetInputForPlugboard proc uses eax ebx ecx edx esi edi
 	mov esi, offset plug
 	mov edi, 0
 	enterinput:
-	invoke SetXY, dl, dh
-	call readchar
-	cmp eax, 7181
-	je enteraction
-	cmp eax, 18432
-	je gotoplugboard
-	cmp eax, 20480
-	je gotodone
-	cmp eax, 19200
-	je gotoleft
-	cmp eax, 19712
-	je gotoright
-	jmp enterinput
-	enteraction:
-		cmp dh, 7
-		je exchange
-		jmp finishplugboard
-		exchange:
-		cmp swap0, 0
-		je firstswap
-		push edx
 		mov ebx, 0
-		mov bl, swap0
-		mov cl, [esi]
-		mov swap0, cl
-		mov [esi], bl
-		movzx eax, bl
-		call writechar
-		sub esi, edi
-		sub bl, 65
-		add esi, ebx
-		mov [esi], cl
-		mov cl, bl
-		mov dl, 14
-		swapcharpos:
-		cmp cl, 0
-		jle disswapchar
-		add dl, 2
-		dec cl
-		jmp swapcharpos
-		disswapchar:
-		invoke SetXY, dl, 7
-		movzx eax, swap0
-		call writechar
-		dec dl
-		pop edx
-		;invoke SetXY, dl, dh
-		sub esi, ebx
-		add esi, edi
-		jmp finishswap
+		mov ecx, 0
+		invoke SetXY, dl, dh
+		call readchar
+		cmp eax, 18432
+		je gotoplugboard
+		cmp eax, 20480
+		je gotodone
+		cmp eax, 19200
+		je gotoleft
+		cmp eax, 19712
+		je gotoright
+		cmp eax, 7181
+		jne enterinput
+			cmp dh, 7
+			jne finishplugboard
+			cmp bl, 0
+			je firstswap
+			push edx
+			mov cl, [esi]
+			mov [esi], bl
+			mov edx, offset plug
+			sub bl, 65
+			add edx, ebx
+			mov [edx], cl
+			invoke SetXY, 14, 7
+			invoke DisplayPlugboard, offset plug
+			pop edx
+			jmp enterinput
 		firstswap:
-		mov cl, [esi]
-		mov swap0, cl
-		jmp enterinput
-		finishswap:
-		mov swap0, 0
-		jmp enterinput
-	gotoplugboard:
-		cmp dh, 7
-		je enterinput
-		invoke SetXY, 14, 7
-		jmp enterinput
-	gotodone:
-		cmp dh, 15
-		je enterinput
-		invoke SetXY, 30, 15
-		jmp enterinput
-	gotoleft:
-		cmp edi, 0
-		je enterinput
-		sub dl, 2
-		dec esi
-		dec edi
-		jmp enterinput
-	gotoright:
-		cmp edi, 25
-		je enterinput
-		add dl, 2
-		inc esi
-		inc edi
-		jmp enterinput
-	finishplugboard:
+			mov bl, [esi]
+			jmp enterinput
+		gotoplugboard:
+			cmp dh, 7
+			je enterinput
+			invoke SetXY, 14, 7
+			jmp enterinput
+		gotodone:
+			cmp dh, 15
+			je enterinput
+			invoke SetXY, 30, 15
+			jmp enterinput
+		gotoleft:
+			cmp edi, 0
+			je enterinput
+			sub dl, 2
+			dec esi
+			dec edi
+			jmp enterinput
+		gotoright:
+			cmp edi, 25
+			je enterinput
+			add dl, 2
+			inc esi
+			inc edi
+			jmp enterinput
+		finishplugboard:
+		mov edx, offset plug
+		call writestring
+		call readint
 	ret
 GetInputForPlugboard endp
 
 EditPlugboard proc uses esi ecx eax ebx edx
-	mov esi, offset plug
-	mov ebx, 0
-	nextline:
-	mov ecx, 26
-	printplug:
-		mov al, [esi]
-		call writechar
-		mov al, 32
-		call writechar
-		inc esi
-	loop printplug
-	inc ebx
+	invoke DisplayPlugboard, offset plug
 	inc dh
 	invoke SetXY, dl, dh
-	cmp ebx, 1
-	je linetwo
-	cmp ebx, 2
-	je linethree
-	jmp getinput
-	linetwo:
-		mov esi, offset plugpretty
-		jmp nextline
-	linethree:
-		mov esi, offset E
-		jmp nextline
-	getinput:
+	invoke DisplayPlugboard, offset plugpretty
+	inc dh
+	invoke SetXY, dl, dh
+	invoke DisplayPlugboard, offset E
 	invoke SetXY, 29, 15
 	mov edx, offset plugdone
 	call writestring
@@ -360,7 +331,6 @@ EditPlugboard endp
 
 Setup proc
 	call clrscr
-	;plugboard settings
 	invoke SetXY, 14, 7
 	invoke EditPlugboard
 	call clrscr
