@@ -47,8 +47,10 @@ cshft byte 1
 
 E byte "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-plug byte "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+plug byte "ABCDEFGHIJKLMNOPQRSTUVWXYZ",0
 plugpretty byte "||||||||||||||||||||||||||"
+
+swap0 byte 0
 
 rotor_positions byte "<A> <A> <A>",0
 
@@ -231,6 +233,79 @@ GetInputForRotor proc uses eax ebx ecx edx edi
 	ret
 GetInputForRotor endp
 
+GetInputForPlugboard proc uses eax ebx ecx edx esi edi
+	invoke SetXY, 14, 7
+	mov esi, offset plug
+	mov edi, 0
+	enterinput:
+	invoke SetXY, dl, dh
+	call readchar
+	cmp eax, 7181
+	je enteraction
+	cmp eax, 18432
+	je gotoplugboard
+	cmp eax, 20480
+	je gotodone
+	cmp eax, 19200
+	je gotoleft
+	cmp eax, 19712
+	je gotoright
+	jmp enterinput
+	
+	enteraction:
+		cmp dh, 7
+		je exchange
+		jmp finishplugboard
+		exchange:
+		cmp swap0, 0
+		je firstswap
+		mov ebx, 0
+		mov bl, swap0
+		mov cl, [esi]
+		mov [esi], bl
+		sub esi, edi
+		sub bl, 65
+		add esi, ebx
+		mov [esi], cl
+		sub esi, ebx
+		add esi, edi
+		add bl, 65
+		jmp finishswap
+		firstswap:
+		mov cl, [esi]
+		mov swap0, cl
+		jmp enterinput
+		finishswap:
+		mov swap0, 0
+		jmp enterinput
+	gotoplugboard:
+		cmp dh, 7
+		je enterinput
+		invoke SetXY, 14, 7
+		jmp enterinput
+	gotodone:
+		cmp dh, 15
+		je enterinput
+		invoke SetXY, 30, 15
+		jmp enterinput
+	gotoleft:
+		cmp edi, 0
+		je enterinput
+		sub dl, 2
+		dec esi
+		dec edi
+		jmp enterinput
+	gotoright:
+		cmp edi, 25
+		je enterinput
+		add dl, 2
+		inc esi
+		inc edi
+		jmp enterinput
+	finishplugboard:
+	ret
+GetInputForPlugboard endp
+
 EditPlugboard proc uses esi ecx eax ebx
 	mov esi, offset plug
 	mov ebx, 0
@@ -258,7 +333,7 @@ EditPlugboard proc uses esi ecx eax ebx
 	mov esi, offset E
 	jmp nextline
 	getinput:
-	call readchar
+	invoke GetInputForPlugboard
 	ret
 EditPlugboard endp
 
