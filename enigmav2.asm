@@ -259,17 +259,35 @@ GetInputForPlugboard proc uses eax ebx ecx edx esi edi
 		exchange:
 		cmp swap0, 0
 		je firstswap
+		push edx
 		mov ebx, 0
 		mov bl, swap0
 		mov cl, [esi]
+		mov swap0, cl
 		mov [esi], bl
+		movzx eax, bl
+		call writechar
 		sub esi, edi
 		sub bl, 65
 		add esi, ebx
 		mov [esi], cl
+		mov cl, bl
+		mov dl, 14
+		swapcharpos:
+		cmp cl, 0
+		jle disswapchar
+		add dl, 2
+		dec cl
+		jmp swapcharpos
+		disswapchar:
+		invoke SetXY, dl, 7
+		movzx eax, swap0
+		call writechar
+		dec dl
+		pop edx
+		;invoke SetXY, dl, dh
 		sub esi, ebx
 		add esi, edi
-		add bl, 65
 		jmp finishswap
 		firstswap:
 		mov cl, [esi]
