@@ -189,8 +189,7 @@ main proc
 	exit
 main endp
 
-GetInputForRotor proc uses eax ebx ecx edx edi
-	mov ebx, 0
+GetInputForRotor proc uses eax ecx edx edi
 	mov edi, offset astep
 	mov dl, 34
 	mov dh, 5
@@ -201,71 +200,54 @@ GetInputForRotor proc uses eax ebx ecx edx edi
 		call readchar
 		cmp eax, 7181
 		je finishrotors
-		cmp eax, 18432
-		je increasestep
 		cmp eax, 20480
 		je decreasestep
 		cmp eax, 19200
 		je leftrotor
 		cmp eax, 19712
 		je rightrotor
+		cmp eax, 18432
 		jne inputkey
-	increasestep:
-		inc cl
-		cmp cl, 25
-		jle WriteNewPosition
-		mov cl, 0
-		jmp WriteNewPosition
-	decreasestep:
-		cmp cl, 0
-		jne backposition
-		mov cl, 26
-		backposition:
-		dec cl
-	WriteNewPosition:
-		mov [edi], cl
-		add cl, 65
-		movzx eax, cl
-		call writechar
-		jmp NextInput
-	leftrotor:
-		cmp ebx, 0
-		je NextInput
-		sub dl, 4
-		dec edi
-		dec ebx
-		jmp NextInput
-	rightrotor:
-		cmp ebx, 2
-		je NextInput
-		add dl, 4
-		inc edi
-		inc ebx
-		jmp NextInput
-	finishrotors:
+			inc cl
+			cmp cl, 25
+			jle WriteNewPosition
+			mov cl, 0
+			jmp WriteNewPosition
+		decreasestep:
+			cmp cl, 0
+			jne backposition
+			mov cl, 26
+			backposition:
+			dec cl
+		WriteNewPosition:
+			mov [edi], cl
+			add cl, 65
+			movzx eax, cl
+			call writechar
+			jmp NextInput
+		leftrotor:
+			cmp dl, 34
+			je NextInput
+			sub dl, 4
+			dec edi
+			jmp NextInput
+		rightrotor:
+			cmp dl, 42
+			je NextInput
+			add dl, 4
+			inc edi
+			jmp NextInput
+		finishrotors:
 	ret
 GetInputForRotor endp
-
-VerifyPlug proc uses edi esi eax ebx edx
-	mov ecx, 0
-	mov edx, offset E
-	add edx, edi
-	mov al, [esi]
-	mov bl, [edx]
-	cmp al, bl
-	je SwapOK
-	mov cl, 1
-	SwapOK:
-	ret
-VerifyPlug endp
 
 GetInputForPlugboard proc uses eax ebx ecx edx esi edi
 	invoke SetXY, 14, 7
 	mov esi, offset plug
-	mov edi, 0
 	clrenterinput:
 		mov ebx, 0
 		mov ecx, 0
+		mov edi, 0
 	enterinput:
 		invoke SetXY, dl, dh
 		call readchar
@@ -283,12 +265,11 @@ GetInputForPlugboard proc uses eax ebx ecx edx esi edi
 			jne finishplugboard
 			cmp bl, 0
 			je firstswap
-			push edx
 			mov cl, [esi]
 			mov [esi], bl
-			mov edx, offset plug
-			add edx, edi
-			mov [edx], cl
+			add edi, offset plug
+			mov [edi], cl
+			push edx
 			invoke SetXY, 14, 7
 			invoke DisplayPlugboard, offset plug
 			pop edx
@@ -296,10 +277,7 @@ GetInputForPlugboard proc uses eax ebx ecx edx esi edi
 		firstswap:
 			mov bl, [esi]
 			mov edi, esi
-			push esi
-			mov esi, offset plug
-			sub edi, esi
-			pop esi
+			sub edi, offset plug
 			jmp enterinput
 		gotoplugboard:
 			cmp dh, 7
@@ -316,7 +294,7 @@ GetInputForPlugboard proc uses eax ebx ecx edx esi edi
 			dec esi
 			jmp enterinput
 		gotoright:
-			cmp edi, 66
+			cmp dl, 64
 			je enterinput
 			add dl, 2
 			inc esi
