@@ -48,6 +48,7 @@ cshft byte 1
 E byte "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 plug byte "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+plugpretty byte "||||||||||||||||||||||||||"
 
 rotor_positions byte "<A> <A> <A>",0
 
@@ -230,7 +231,42 @@ GetInputForRotor proc uses eax ebx ecx edx edi
 	ret
 GetInputForRotor endp
 
+EditPlugboard proc uses esi ecx eax ebx
+	mov esi, offset plug
+	mov ebx, 0
+	nextline:
+	mov ecx, 26
+	printplug:
+	mov al, [esi]
+	call writechar
+	mov al, 32
+	call writechar
+	inc esi
+	loop printplug
+	inc ebx
+	inc dh
+	invoke SetXY, dl, dh
+	cmp ebx, 1
+	je linetwo
+	cmp ebx, 2
+	je linethree
+	jmp getinput
+	linetwo:
+	mov esi, offset plugpretty
+	jmp nextline
+	linethree:
+	mov esi, offset E
+	jmp nextline
+	getinput:
+	call readchar
+	ret
+EditPlugboard endp
+
 Setup proc
+	call clrscr
+	;plugboard settings
+	invoke SetXY, 14, 7
+	invoke EditPlugboard
 	call clrscr
 	invoke SetXY, 33, 5
 	mov edx, offset rotor_positions
