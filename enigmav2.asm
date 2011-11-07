@@ -49,7 +49,6 @@ E byte "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 plug byte "ABCDEFGHIJKLMNOPQRSTUVWXYZ",0
 plugpretty byte "||||||||||||||||||||||||||"
-
 plugdone byte "[Done]",0
 
 swap0 byte 0
@@ -253,7 +252,6 @@ GetInputForPlugboard proc uses eax ebx ecx edx esi edi
 	cmp eax, 19712
 	je gotoright
 	jmp enterinput
-	
 	enteraction:
 		cmp dh, 7
 		je exchange
