@@ -50,6 +50,8 @@ E byte "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 plug byte "ABCDEFGHIJKLMNOPQRSTUVWXYZ",0
 plugpretty byte "||||||||||||||||||||||||||"
 
+plugdone byte "[Done]",0
+
 swap0 byte 0
 
 rotor_positions byte "<A> <A> <A>",0
@@ -306,7 +308,7 @@ GetInputForPlugboard proc uses eax ebx ecx edx esi edi
 	ret
 GetInputForPlugboard endp
 
-EditPlugboard proc uses esi ecx eax ebx
+EditPlugboard proc uses esi ecx eax ebx edx
 	mov esi, offset plug
 	mov ebx, 0
 	nextline:
@@ -333,6 +335,9 @@ EditPlugboard proc uses esi ecx eax ebx
 		mov esi, offset E
 		jmp nextline
 	getinput:
+	invoke SetXY, 29, 15
+	mov edx, offset plugdone
+	call writestring
 	invoke GetInputForPlugboard
 	ret
 EditPlugboard endp
