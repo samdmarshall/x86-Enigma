@@ -246,13 +246,27 @@ GetInputForRotor proc uses eax ebx ecx edx edi
 	ret
 GetInputForRotor endp
 
+VerifyPlug proc uses edi esi eax ebx edx
+	mov ecx, 0
+	mov edx, offset E
+	add edx, edi
+	mov al, [esi]
+	mov bl, [edx]
+	cmp al, bl
+	je SwapOK
+	mov cl, 1
+	SwapOK:
+	ret
+VerifyPlug endp
+
 GetInputForPlugboard proc uses eax ebx ecx edx esi edi
 	invoke SetXY, 14, 7
 	mov esi, offset plug
 	mov edi, 0
-	enterinput:
+	clrenterinput:
 		mov ebx, 0
 		mov ecx, 0
+	enterinput:
 		invoke SetXY, dl, dh
 		call readchar
 		cmp eax, 18432
@@ -273,44 +287,41 @@ GetInputForPlugboard proc uses eax ebx ecx edx esi edi
 			mov cl, [esi]
 			mov [esi], bl
 			mov edx, offset plug
-			sub bl, 65
-			add edx, ebx
+			add edx, edi
 			mov [edx], cl
 			invoke SetXY, 14, 7
 			invoke DisplayPlugboard, offset plug
 			pop edx
-			jmp enterinput
+			jmp clrenterinput
 		firstswap:
 			mov bl, [esi]
+			mov edi, esi
+			push esi
+			mov esi, offset plug
+			sub edi, esi
+			pop esi
 			jmp enterinput
 		gotoplugboard:
 			cmp dh, 7
 			je enterinput
 			invoke SetXY, 14, 7
-			jmp enterinput
+			jmp clrenterinput
 		gotodone:
-			cmp dh, 15
-			je enterinput
 			invoke SetXY, 30, 15
-			jmp enterinput
+			jmp clrenterinput
 		gotoleft:
-			cmp edi, 0
+			cmp dl, 14
 			je enterinput
 			sub dl, 2
 			dec esi
-			dec edi
 			jmp enterinput
 		gotoright:
-			cmp edi, 25
+			cmp edi, 66
 			je enterinput
 			add dl, 2
 			inc esi
-			inc edi
 			jmp enterinput
 		finishplugboard:
-		mov edx, offset plug
-		call writestring
-		call readint
 	ret
 GetInputForPlugboard endp
 
