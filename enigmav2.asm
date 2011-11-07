@@ -312,11 +312,11 @@ EditPlugboard proc uses esi ecx eax ebx
 	nextline:
 	mov ecx, 26
 	printplug:
-	mov al, [esi]
-	call writechar
-	mov al, 32
-	call writechar
-	inc esi
+		mov al, [esi]
+		call writechar
+		mov al, 32
+		call writechar
+		inc esi
 	loop printplug
 	inc ebx
 	inc dh
@@ -327,11 +327,11 @@ EditPlugboard proc uses esi ecx eax ebx
 	je linethree
 	jmp getinput
 	linetwo:
-	mov esi, offset plugpretty
-	jmp nextline
+		mov esi, offset plugpretty
+		jmp nextline
 	linethree:
-	mov esi, offset E
-	jmp nextline
+		mov esi, offset E
+		jmp nextline
 	getinput:
 	invoke GetInputForPlugboard
 	ret
