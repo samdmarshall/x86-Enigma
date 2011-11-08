@@ -78,14 +78,14 @@ GenerateReverse proc uses edi esi ecx eax ebx,
 	mov esi, rotor
 	mov ecx, 26
 	FillReverse:
-	mov al, [esi]
-	sub al, 65
-	mov edi, reverse_rotor
-	add edi, eax
-	mov bl, 91
-	sub bl, cl
-	mov [edi], bl
-	inc esi
+		mov al, [esi]
+		sub al, 65
+		mov edi, reverse_rotor
+		add edi, eax
+		mov bl, 91
+		sub bl, cl
+		mov [edi], bl
+		inc esi
 	loop FillReverse
 	ret
 GenerateReverse endp
@@ -104,12 +104,12 @@ UpdateRotorPositions proc uses eax ecx edx edi
 	mov edi, offset astep
 	mov cl, 3
 	updatepositions:
-	mov al, [edi]
-	add al, 65
-	call writechar
-	add dl, 4
-	invoke SetXY, dl, dh
-	inc edi
+		mov al, [edi]
+		add al, 65
+		call writechar
+		add dl, 4
+		invoke SetXY, dl, dh
+		inc edi
 	loop updatepositions
 	invoke SetXY, 0, 11
 	ret
@@ -139,49 +139,49 @@ main proc
 	mov edi, offset output
 	movzx ecx, stringlen
 	Encrypt:
-	cmp ecx, 0
-	je PrintOutput
-	mov ebx, 0
-	mov bl, [esi]
-	call Verify
-	cmp eax, 0
-	jne NextCharacter
-	movzx eax, cshft
-	add cstep, al
-	cmp cstep, 26
-	jl encode
-	sub cstep, 26
-	movzx eax, bshft
-	add bstep, al
-	cmp bstep, 26
-	jl encode
-	sub bstep, 26
-	movzx eax, ashft
-	add astep, al
-	cmp astep, 26
-	jl encode
-	sub astep, 26
+		cmp ecx, 0
+		je PrintOutput
+		mov ebx, 0
+		mov bl, [esi]
+		call Verify
+		cmp eax, 0
+		jne NextCharacter
+		movzx eax, cshft
+		add cstep, al
+		cmp cstep, 26
+		jl encode
+		sub cstep, 26
+		movzx eax, bshft
+		add bstep, al
+		cmp bstep, 26
+		jl encode
+		sub bstep, 26
+		movzx eax, ashft
+		add astep, al
+		cmp astep, 26
+		jl encode
+		sub astep, 26
 	encode:
-	invoke UpdateRotorPositions
-	invoke PassThroughRotor, offset plug, 0
-	invoke PassThroughRotor, offset crotor, cstep
-	invoke PassThroughRotor, offset brotor, bstep
-	invoke PassThroughRotor, offset arotor, astep
-	invoke PassThroughRotor, offset reflct, 0
-	invoke PassThroughRotor, offset arevrs, astep
-	invoke PassThroughRotor, offset brevrs, bstep
-	invoke PassThroughRotor, offset crevrs, cstep
-	invoke PassThroughRotor, offset plug, 0
+		invoke UpdateRotorPositions
+		invoke PassThroughRotor, offset plug, 0
+		invoke PassThroughRotor, offset crotor, cstep
+		invoke PassThroughRotor, offset brotor, bstep
+		invoke PassThroughRotor, offset arotor, astep
+		invoke PassThroughRotor, offset reflct, 0
+		invoke PassThroughRotor, offset arevrs, astep
+		invoke PassThroughRotor, offset brevrs, bstep
+		invoke PassThroughRotor, offset crevrs, cstep
+		invoke PassThroughRotor, offset plug, 0
 	NextCharacter:
-	mov [edi], bl
-	inc esi
-	inc edi
-	dec ecx
-	jmp Encrypt
+		mov [edi], bl
+		inc esi
+		inc edi
+		dec ecx
+		jmp Encrypt
 	PrintOutput:
-	mov edx, offset output
-	call writestring
-	call crlf
+		mov edx, offset output
+		call writestring
+		call crlf
 	exit
 main endp
 
@@ -190,7 +190,7 @@ GetInputForRotor proc uses eax ecx edx edi
 	mov dl, 34
 	mov dh, 5
 	NextInput:
-	mov cl, [edi]
+		mov cl, [edi]
 	inputkey:
 		invoke SetXY, dl, dh
 		call readchar
@@ -345,7 +345,7 @@ Verify proc
 	cmp ebx, 90
 	jle GotoEnd
 	invalid:
-	mov eax, 1
+		mov eax, 1
 	GotoEnd:
 	ret
 Verify endp
