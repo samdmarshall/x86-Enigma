@@ -146,7 +146,6 @@ main proc
 	call Verify
 	cmp eax, 0
 	jne NextCharacter
-	
 	movzx eax, cshft
 	add cstep, al
 	cmp cstep, 26
@@ -162,10 +161,8 @@ main proc
 	cmp astep, 26
 	jl encode
 	sub astep, 26
-
 	encode:
 	invoke UpdateRotorPositions
-	
 	invoke PassThroughRotor, offset plug, 0
 	invoke PassThroughRotor, offset crotor, cstep
 	invoke PassThroughRotor, offset brotor, bstep
@@ -175,7 +172,6 @@ main proc
 	invoke PassThroughRotor, offset brevrs, bstep
 	invoke PassThroughRotor, offset crevrs, cstep
 	invoke PassThroughRotor, offset plug, 0
-	
 	NextCharacter:
 	mov [edi], bl
 	inc esi
