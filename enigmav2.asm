@@ -42,7 +42,7 @@ bstep byte 0
 cstep byte 0
 
 ashft byte 1
-bshft byte 2
+bshft byte 1
 cshft byte 1
 
 E byte "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -76,6 +76,7 @@ GenerateReverse proc uses edi esi ecx eax ebx,
 	reverse_rotor:PTR BYTE,
 	rotor:PTR BYTE
 	mov esi, rotor
+	mov eax, 0
 	mov ecx, 26
 	FillReverse:
 		mov al, [esi]
@@ -146,18 +147,29 @@ main proc
 		call Verify
 		cmp eax, 0
 		jne NextCharacter
+	stepping:
 		movzx eax, cshft
 		add cstep, al
-		cmp cstep, 26
-		jl encode
-		sub cstep, 26
+		cmp cstep, 22
+		jne testb
 		movzx eax, bshft
 		add bstep, al
-		cmp bstep, 26
-		jl encode
-		sub bstep, 26
+	testb:
+		cmp bstep, 4
+		jne cstate
+		movzx eax, bshft
+		add bstep, al
 		movzx eax, ashft
 		add astep, al
+	cstate:
+		cmp cstep, 26
+		jl bstate
+		sub cstep, 26
+	bstate:
+		cmp bstep, 26
+		jl astate
+		sub bstep, 26
+	astate:
 		cmp astep, 26
 		jl encode
 		sub astep, 26
