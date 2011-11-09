@@ -1,8 +1,9 @@
+* This code requires the Irvine32 library.
+* Please use enigma-staticrotors.asm to test as the Reverse Rotor generator has issues on some systems and may cause the program to crash.
+
 Enigma is an x86 assembly program that replicates the behavior of the World War 2 German "Enigma" encryption machine.
 
 The current version supports multiple pre-set rotors as well as allowing for user created rotors. It currently supports 3 rotors, but will support up to 5 in the future.
-
-This code requires the Irvine32 library.
 
 
 Copyright (c) 2010-2011, Sam Marshall
