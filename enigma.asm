@@ -219,9 +219,10 @@ main proc
 	mov ecx, lengthof plug
 	call PassThroughRotor
 	
-	isfalse:	;add non-letter character to output
+	
 	pop ecx
 	pop esi
+	isfalse:	;add non-letter character to output
 	mov [edi], al
 	;next character
 	inc esi
@@ -291,7 +292,7 @@ PassThroughRotor proc uses ebx ecx edx edi esi
 	mov edi, ecx
 	add esi, edx
 	movzx ebx, dl
-	add ebx, al
+	add ebx, eax
 	;bl = distance from (offset + steps) (0 - 25)
 	sub edi, ebx
 	;ecx = distance from (offset + steps) to position 26
