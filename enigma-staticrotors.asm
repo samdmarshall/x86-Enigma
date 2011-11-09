@@ -27,13 +27,13 @@ output_prompt byte "Encrypted message: ",0
 stringlen byte 0
 
 arotor byte "EKMFLGDQVZNTOWYHXUSPAIBRCJ"
-arevrs byte "UWYGADFPVZBECKMTHXSLRINQOJ" ;26 dup(" ")
+arevrs byte "UWYGADFPVZBECKMTHXSLRINQOJ"
 
 brotor byte "AJDKSIRUXBLHWTMCQGZNPYFVOE"
-brevrs byte "AJPCZWRLFBDKOTYUQGENHXMIVS" ;26 dup(" ")
+brevrs byte "AJPCZWRLFBDKOTYUQGENHXMIVS"
 
 crotor byte "BDFHJLCPRTXVZNYEIWGAKMUSQO"
-crevrs byte "TAGBPCSDQEUFVNZHYIXJWLRKOM" ;26 dup(" ")
+crevrs byte "TAGBPCSDQEUFVNZHYIXJWLRKOM"
 
 reflct byte "YRUHQSLDPXNGOKMIEBFZCWVJAT"
 
@@ -71,24 +71,6 @@ PassThroughRotor proc uses esi edi ecx,
 	mov bl, [esi]
 	ret
 PassThroughRotor endp
-
-GenerateReverse proc uses edi esi ecx eax ebx, 
-	reverse_rotor:PTR BYTE,
-	rotor:PTR BYTE
-	mov esi, rotor
-	mov ecx, 26
-	FillReverse:
-		mov al, [esi]
-		sub al, 65
-		mov edi, reverse_rotor
-		add edi, eax
-		mov bl, 91
-		sub bl, cl
-		mov [edi], bl
-		inc esi
-	loop FillReverse
-	ret
-GenerateReverse endp
 
 SetXY proc,
 	X:BYTE,
@@ -131,9 +113,6 @@ DisplayPlugboard endp
 
 main proc
 	call Setup
-	;invoke GenerateReverse, addr crevrs, addr crotor
-	;invoke GenerateReverse, addr brevrs, addr brotor
-	;invoke GenerateReverse, addr arevrs, addr arotor
 	call GetInputString
 	mov esi, offset input
 	mov edi, offset output
