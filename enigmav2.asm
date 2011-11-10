@@ -62,6 +62,10 @@ PassThroughRotor proc uses esi edi ecx eax,
 	mov cl, step_count
 	sub bl, 65
 	add cl, bl
+	cmp cl, 26
+	jl loopback
+	sub cl, 26
+	loopback:
 	add esi, ecx
 	mov al, [esi]
 	sub al, 65
@@ -154,7 +158,6 @@ main proc
 		cmp eax, 0
 		jne NextCharacter
 		
-		
 	cstate:
 		movzx eax, cshft
 		add cstep, al
@@ -183,11 +186,14 @@ main proc
 	encode:
 	
 		movzx eax, cstep
-		call writeint
+		add al, 65
+		call writechar
 		movzx eax, bstep
-		call writeint
+		add al, 65
+		call writechar
 		movzx eax, astep
-		call writeint
+		add al, 65
+		call writechar
 		call crlf
 	
 		;invoke UpdateRotorPositions
