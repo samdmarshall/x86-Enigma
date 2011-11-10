@@ -73,8 +73,7 @@ PassThroughRotor proc uses esi edi ecx eax,
 	add bl, al
 	cmp bl, 0
 	jg skipcalc
-	mov cl, 26
-	add bl, cl
+	add bl, 26
 	skipcalc:
 	mov edi, offset E
 	add edi, ebx
@@ -208,8 +207,7 @@ main endp
 
 GetInputForRotor proc uses eax ecx edx edi
 	mov edi, offset astep
-	mov dl, 34
-	mov dh, 5
+	invoke SetXY, 34, 5
 	NextInput:
 		mov cl, [edi]
 	inputkey:

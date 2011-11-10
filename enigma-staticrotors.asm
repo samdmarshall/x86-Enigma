@@ -42,7 +42,7 @@ bstep byte 0
 cstep byte 0
 
 ashft byte 1
-bshft byte 2
+bshft byte 1
 cshft byte 1
 
 E byte "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -55,20 +55,29 @@ rotor_positions byte "<A> <A> <A>",0
 
 .code
 
-PassThroughRotor proc uses esi edi ecx,
+PassThroughRotor proc uses esi edi ecx eax,
 	r_offset:PTR BYTE,
 	step_count:BYTE
-	mov ecx, 26
-	mov edi, ecx
 	mov esi, r_offset
-	movzx edx, step_count
-	sub ebx, 65
-	add esi, edx
-	add edx, ebx
-	sub ecx, edx
-	sub edi, ecx
-	add esi, edi
-	mov bl, [esi]
+	mov cl, step_count
+	sub bl, 65
+	add cl, bl
+	cmp cl, 26
+	jl loopback
+	sub cl, 26
+	loopback:
+	add esi, ecx
+	mov al, [esi]
+	sub al, 65
+	sub al, cl
+	add bl, al
+	cmp bl, 0
+	jg skipcalc
+	add bl, 26
+	skipcalc:
+	mov edi, offset E
+	add edi, ebx
+	mov bl, [edi]
 	ret
 PassThroughRotor endp
 
@@ -125,16 +134,26 @@ main proc
 		call Verify
 		cmp eax, 0
 		jne NextCharacter
+	cstate:
 		movzx eax, cshft
 		add cstep, al
 		cmp cstep, 26
-		jl encode
+		jl bstate
 		sub cstep, 26
+	bstate:
+		cmp cstep, 22
+		jne testb
 		movzx eax, bshft
 		add bstep, al
+	testb:
 		cmp bstep, 26
-		jl encode
+		jl astate
 		sub bstep, 26
+	astate:
+		cmp bstep, 4
+		jne encode
+		movzx eax, bshft
+		add bstep, al
 		movzx eax, ashft
 		add astep, al
 		cmp astep, 26
@@ -166,8 +185,7 @@ main endp
 
 GetInputForRotor proc uses eax ecx edx edi
 	mov edi, offset astep
-	mov dl, 34
-	mov dh, 5
+	invoke SetXY, 34, 5
 	NextInput:
 		mov cl, [edi]
 	inputkey:
