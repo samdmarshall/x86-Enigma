@@ -66,7 +66,8 @@ PassThroughRotor proc uses esi edi ecx eax,
 	jl loopback
 	sub cl, 26
 	loopback:
-	mov al, [esi+ecx]
+	add esi, ecx
+	mov al, [esi]
 	sub al, 65
 	sub al, cl
 	add bl, al
@@ -74,7 +75,9 @@ PassThroughRotor proc uses esi edi ecx eax,
 	jg skipcalc
 	add bl, 26
 	skipcalc:
-	add bl, 65
+	mov edi, offset E
+	add edi, ebx
+	mov bl, [edi]
 	ret
 PassThroughRotor endp
 
