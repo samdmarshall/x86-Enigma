@@ -172,7 +172,7 @@ main proc
 		jl astate
 		sub bstep, 26
 	astate:
-		cmp bstep, 4
+		cmp bstep, 5
 		jne encode
 		movzx eax, bshft
 		add bstep, al
