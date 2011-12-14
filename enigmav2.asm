@@ -305,11 +305,15 @@ GetInputForPlugboard proc uses eax ebx ecx edx esi edi
 		gotoleft:
 			cmp dl, 14
 			je enterinput
+			cmp dh, 15
+			je enterinput
 			sub dl, 2
 			dec esi
 			jmp enterinput
 		gotoright:
 			cmp dl, 64
+			je enterinput
+			cmp dh, 15
 			je enterinput
 			add dl, 2
 			inc esi
