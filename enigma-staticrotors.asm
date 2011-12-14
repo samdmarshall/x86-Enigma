@@ -254,13 +254,12 @@ GetInputForPlugboard proc uses eax ebx ecx edx esi edi
 		je gotoright
 		cmp eax, 7181
 		jne enterinput
-			cmp dh, 7
-			jne finishplugboard
+			cmp dh, 15
+			je finishplugboard
 			cmp bl, 0
 			je firstswap
 			mov cl, [esi]
 			mov [esi], bl
-			add edi, offset plug
 			mov [edi], cl
 			push edx
 			invoke SetXY, 14, 7
@@ -270,12 +269,12 @@ GetInputForPlugboard proc uses eax ebx ecx edx esi edi
 		firstswap:
 			mov bl, [esi]
 			mov edi, esi
-			sub edi, offset plug
 			jmp enterinput
 		gotoplugboard:
 			cmp dh, 7
 			je enterinput
 			invoke SetXY, 14, 7
+			mov esi, offset plug
 			jmp clrenterinput
 		gotodone:
 			invoke SetXY, 30, 15
