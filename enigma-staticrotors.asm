@@ -4,7 +4,7 @@ Include Irvine32.inc
 ; Created by Samuel Marshall
 ; Created on November 2nd, 2011, 18:45
 
-;Copyright (c) 2010-2011, Sam Marshall
+;Copyright (c) 2010-2012, Sam Marshall
 ;All rights reserved.
 
 ;Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
