@@ -1,7 +1,7 @@
 title enigma
 include Irvine32.inc
 
-; Created by Samuel Marshall
+; Created by Sam Marshall
 ; Created on November 01, 2011, 12:32 PM
 
 ;Copyright (c) 2010-2011, Sam Marshall
