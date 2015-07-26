@@ -1,7 +1,7 @@
 Title EnigmaV2
 Include Irvine32.inc
 
-; Created by Samuel Marshall
+; Created by Sam Marshall
 ; Created on November 2nd, 2011, 18:45
 
 ;Copyright (c) 2010-2012, Sam Marshall
