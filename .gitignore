@@ -1,3 +1,3 @@
-nimcache/
 
-enigma
+*.obj
+*.exe
